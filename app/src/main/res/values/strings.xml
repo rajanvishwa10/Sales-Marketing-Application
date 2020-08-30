@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Project Application</string>
+    <string name="universal">Universal \n Sales &amp; Marketing</string>
+    <string name="enter_name">Enter Your Name</string>
+    <string name="name">Name</string>
+    <string name="submit">Submit</string>
+    <string name="offline">Offline</string>
+    <string name="online">Online</string>
+</resources>
