@@ -12,14 +12,26 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
-public class MainActivity extends AppCompatActivity {
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
+import java.util.HashMap;
+import java.util.Map;
+
+public class MainActivity extends AppCompatActivity {
+public String name;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         EditText editText = findViewById(R.id.name);
-        String name = editText.getText().toString().trim();
+        name = editText.getText().toString().trim();
         SharedPreferences preferences = getSharedPreferences("pre", MODE_PRIVATE);
         String first = preferences.getString("first", "");
         if (Build.VERSION.SDK_INT >= 21) {
@@ -35,12 +47,11 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("first", "yes");
             editor.apply();
         }
-
     }
 
     public void submit(View view) {
         EditText editText = findViewById(R.id.name);
-        String name = editText.getText().toString().trim();
+        final String name = editText.getText().toString().trim();
         if (name.isEmpty()) {
             editText.setError("Enter Name");
             editText.findFocus();
@@ -49,7 +60,9 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("name", name);
             editor.apply();
+
             Intent intent = new Intent(this, OnlineActivity.class);
+            intent.putExtra("name", name);
             startActivity(intent);
             finish();
         }

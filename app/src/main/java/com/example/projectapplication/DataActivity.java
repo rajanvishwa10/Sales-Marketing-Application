@@ -22,6 +22,7 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -73,7 +74,7 @@ public class DataActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
-        final ProgressDialog progressDialog = ProgressDialog.show(this, "Going Online", "Wait", true);
+        final ProgressDialog progressDialog = ProgressDialog.show(this, "Going Online", "Wait...", true);
         progressDialog.setCancelable(true);
         progressDialog.show();
         new Handler().postDelayed(new Runnable() {
@@ -136,7 +137,8 @@ public class DataActivity extends AppCompatActivity {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
-        adapter = new RecyclerAdapter(getApplicationContext(), getCalllogs());
+        String name = getIntent().getStringExtra("name");
+        adapter = new RecyclerAdapter(getApplicationContext(), getCalllogs(), name);
         recyclerView.setAdapter(adapter);
     }
 
@@ -171,7 +173,7 @@ public class DataActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG)
                 == PackageManager.PERMISSION_GRANTED) {
             final Cursor cursor = getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
-                    CallLog.Calls.DATE + " BETWEEN ? AND ?", where, null);
+                    CallLog.Calls.DATE + " BETWEEN ? AND ?", where, CallLog.Calls.DATE+ " ASC");
 
             final int number = cursor.getColumnIndex(CallLog.Calls.NUMBER);
             final int dura = cursor.getColumnIndex(CallLog.Calls.DURATION);
@@ -205,8 +207,8 @@ public class DataActivity extends AppCompatActivity {
                 final String num = cursor.getString(number);
                 SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
                 String dateString = format.format(new Date(seconds));
+
                 list.add(new Calllogs(num, app, dir, dateString));
-                final String finalDir = dir;
 
             }
         } else {

@@ -4,7 +4,8 @@ public class Calllogs {
 
     private String number, type, time;
     StringBuilder duration;
-    public Calllogs(String number, StringBuilder duration,String type, String time) {
+
+    public Calllogs(String number, StringBuilder duration, String type, String time) {
         this.number = number;
         this.duration = duration;
         this.time = time;
@@ -42,4 +43,5 @@ public class Calllogs {
     public void setTime(String time) {
         this.time = time;
     }
+
 }

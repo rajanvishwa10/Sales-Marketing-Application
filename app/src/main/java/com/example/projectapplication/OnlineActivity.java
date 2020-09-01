@@ -1,5 +1,6 @@
 package com.example.projectapplication;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -11,14 +12,13 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 public class OnlineActivity extends AppCompatActivity {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     Switch switc;
-    TextView textView,textView2;
+    TextView textView, textView2;
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,24 +27,25 @@ public class OnlineActivity extends AppCompatActivity {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
         SharedPreferences sharedPreferences = getSharedPreferences("name", MODE_PRIVATE);
-        String name = sharedPreferences.getString("name","");
+        final String name = sharedPreferences.getString("name", "");
         textView = findViewById(R.id.text_name);
-        textView.setText("Hi, "+name);
+        textView.setText("Hi, " + name);
         switc = findViewById(R.id.switch1);
         switc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 textView2 = findViewById(R.id.status);
-                if(switc.isChecked()){
+                if (switc.isChecked()) {
                     textView2.setText(R.string.online);
                     Intent intent = new Intent(OnlineActivity.this, DataActivity.class);
+                    intent.putExtra("name", name);
                     startActivity(intent);
                     finish();
-                }
-                else{
+                } else {
                     textView2.setText(R.string.offline);
                 }
             }
         });
     }
+
 }

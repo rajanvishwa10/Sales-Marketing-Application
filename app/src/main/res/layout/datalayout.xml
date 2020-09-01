@@ -48,4 +48,13 @@
         android:layout_marginStart="131dp"
         android:text="Type" />
 
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_below="@+id/type"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="-39dp"
+        android:layout_marginEnd="31dp" />
+
 </RelativeLayout>

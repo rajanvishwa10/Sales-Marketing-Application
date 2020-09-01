@@ -1,6 +1,9 @@
 package com.example.projectapplication;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,10 +30,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     private LayoutInflater layoutInflater;
     private Context context;
     private List<Calllogs> calllogsList;
-
-    public RecyclerAdapter(Context context, List<Calllogs> calllogs) {
+    private String name;
+    public RecyclerAdapter(Context context, List<Calllogs> calllogs, String name) {
         this.context = context;
         calllogsList = calllogs;
+        this.name = name;
     }
 
     @Override
@@ -50,15 +54,18 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         time = holder.time;
         type = holder.type;
 
+        //final String name = ((Activity)context).getIntent().getStringExtra("name");
+
         contact.setText(calllogsList.get(position).getNumber());
         duration.setText(calllogsList.get(position).getDuration());
         time.setText(calllogsList.get(position).getTime());
         type.setText(calllogsList.get(position).getType());
 
+
         String timeStr = time.getText().toString();
         final String[] times = timeStr.split(" ");
 
-        StringRequest stringRequest =  new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbyXWSvct4NraanheJad2nrGp752R3GV8Rqk3QQHgKsTsVfG59rV/exec",
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbyXWSvct4NraanheJad2nrGp752R3GV8Rqk3QQHgKsTsVfG59rV/exec",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -69,14 +76,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
             }
-        }){
+        }) {
             @Override
-            protected Map<String,String> getParams() {
+            protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("action","addItem");
-                params.put("date",times[0]);
-                params.put("time",times[1]);
-                params.put("phone",contact.getText().toString());
+                params.put("action", "addItem");
+                params.put("name", name);
+                params.put("date", times[0]);
+                params.put("time", times[1]);
+                params.put("phone", contact.getText().toString());
                 params.put("status", type.getText().toString());
                 params.put("duration", duration.getText().toString());
                 return params;
@@ -99,7 +107,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
             contact = itemView.findViewById(R.id.number);
             duration = itemView.findViewById(R.id.time);
             time = itemView.findViewById(R.id.recording);
