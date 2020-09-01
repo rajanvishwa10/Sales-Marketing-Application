@@ -75,7 +75,7 @@ public class DataActivity extends AppCompatActivity {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
         final ProgressDialog progressDialog = ProgressDialog.show(this, "Going Online", "Wait...", true);
-        progressDialog.setCancelable(true);
+        progressDialog.setCancelable(false);
         progressDialog.show();
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -173,7 +173,7 @@ public class DataActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG)
                 == PackageManager.PERMISSION_GRANTED) {
             final Cursor cursor = getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
-                    CallLog.Calls.DATE + " BETWEEN ? AND ?", where, CallLog.Calls.DATE+ " ASC");
+                    CallLog.Calls.DATE + " BETWEEN ? AND ?", where, CallLog.Calls.DATE + " ASC");
 
             final int number = cursor.getColumnIndex(CallLog.Calls.NUMBER);
             final int dura = cursor.getColumnIndex(CallLog.Calls.DURATION);
@@ -209,7 +209,6 @@ public class DataActivity extends AppCompatActivity {
                 String dateString = format.format(new Date(seconds));
 
                 list.add(new Calllogs(num, app, dir, dateString));
-
             }
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALL_LOG}, 1);
@@ -260,4 +259,5 @@ public class DataActivity extends AppCompatActivity {
             }
         }
     }
+    
 }
