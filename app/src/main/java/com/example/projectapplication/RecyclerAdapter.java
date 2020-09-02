@@ -54,8 +54,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         time = holder.time;
         type = holder.type;
 
-        //final String name = ((Activity)context).getIntent().getStringExtra("name");
-
         contact.setText(calllogsList.get(position).getNumber());
         duration.setText(calllogsList.get(position).getDuration());
         time.setText(calllogsList.get(position).getTime());
@@ -69,7 +67,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        //Toast.makeText(Re.this, response, Toast.LENGTH_SHORT).show();
                     }
                 }, new Response.ErrorListener() {
             @Override
