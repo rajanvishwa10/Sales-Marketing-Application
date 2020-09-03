@@ -22,10 +22,10 @@
         <activity android:name=".SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name=".BackgroundService"/>
         <activity android:name=".OnlineActivity" />
         <activity android:name=".MainActivity" />
     </application>

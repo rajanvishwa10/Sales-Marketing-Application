@@ -14,6 +14,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.Service;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
@@ -57,15 +58,7 @@ public class DataActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
-        final ProgressDialog progressDialog = ProgressDialog.show(this, "Going Online", "Wait...", true);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                progressDialog.dismiss();
-            }
-        }, 10000);
+
         swipeRefreshLayout = findViewById(R.id.swipe);
         chronometer = findViewById(R.id.time);
         chronometer.start();
@@ -114,7 +107,7 @@ public class DataActivity extends AppCompatActivity {
         });
     }
 
-    private void recycler() {
+    public void recycler() {
         recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -136,7 +129,7 @@ public class DataActivity extends AppCompatActivity {
         int hr = Integer.parseInt(str2[0]);
         int month = calendar.get(Calendar.MONTH);
         int min = Integer.parseInt(str2[1]);
-        calendar.set(year, month, day, hr, min - 1);
+        calendar.set(year, month, day, hr, min -1);
         String fromDate = String.valueOf(calendar.getTimeInMillis());
         SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy HH mm");
         Date date2 = new Date();
@@ -156,7 +149,7 @@ public class DataActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG)
                 == PackageManager.PERMISSION_GRANTED) {
             final Cursor cursor = getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
-                    CallLog.Calls.DATE + " BETWEEN ? AND ?", where, CallLog.Calls.DATE + " ASC");
+                    CallLog.Calls.DATE +" BETWEEN ? AND ?", where, CallLog.Calls.DATE+" ASC");
 
             final int number = cursor.getColumnIndex(CallLog.Calls.NUMBER);
             final int dura = cursor.getColumnIndex(CallLog.Calls.DURATION);
@@ -222,6 +215,7 @@ public class DataActivity extends AppCompatActivity {
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_timer_24)
+                .setAutoCancel(true)
                 .setContentTitle("You were online for : " + chronometer.getText().toString());
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
@@ -243,4 +237,9 @@ public class DataActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        startService(new Intent(this, BackgroundService.class));
+    }
 }
