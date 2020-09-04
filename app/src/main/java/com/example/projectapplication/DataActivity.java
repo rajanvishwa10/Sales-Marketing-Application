@@ -3,6 +3,7 @@ package com.example.projectapplication;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,6 +32,8 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,13 +46,13 @@ public class DataActivity extends AppCompatActivity {
     private boolean timer;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
-    public String CHANNEL_ID = "my_channel_01";
-    public CharSequence name = "my_channel";
-    public String Description = "This is my channel";
+    //    public String CHANNEL_ID = "my_channel_01";
+//    public CharSequence name = "my_channel";
+//    public String Description = "This is my channel";
     private TextView textView;
     SwipeRefreshLayout swipeRefreshLayout;
-    int NOTIFICATION_ID = 234;
-
+    //Snackbar snackbar;
+    ConstraintLayout constraintLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,7 @@ public class DataActivity extends AppCompatActivity {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
 
+        //constraintLayout = findViewById(R.id.constraint);
         swipeRefreshLayout = findViewById(R.id.swipe);
         chronometer = findViewById(R.id.time);
         chronometer.start();
@@ -69,32 +73,32 @@ public class DataActivity extends AppCompatActivity {
         Date date = new Date();
         String dateStr = formatter.format(date);
         textView.setText(dateStr);
-        Intent intent = new Intent(this, OnlineActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.putExtra("notification id", NOTIFICATION_ID);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
-            mChannel.setDescription(Description);
-            mChannel.enableLights(true);
-            mChannel.setLightColor(Color.RED);
-            mChannel.setShowBadge(false);
-            notificationManager.createNotificationChannel(mChannel);
-        }
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_baseline_timer_24)
-                .setContentTitle("Online")
-                .setAutoCancel(true)
-                .setContentText("Click to go Offline")
-                .setContentIntent(resultPendingIntent)
-                .setUsesChronometer(true);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
-        stackBuilder.addParentStack(DataActivity.class);
-        stackBuilder.addNextIntent(intent);
-        notificationManager.notify(NOTIFICATION_ID, builder.build());
+//        Intent intent = new Intent(this, OnlineActivity.class);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//        intent.putExtra("notification id", NOTIFICATION_ID);
+//        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+//        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//            int importance = NotificationManager.IMPORTANCE_HIGH;
+//            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+//            mChannel.setDescription(Description);
+//            mChannel.enableLights(true);
+//            mChannel.setLightColor(Color.RED);
+//            mChannel.setShowBadge(false);
+//            notificationManager.createNotificationChannel(mChannel);
+//        }
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+//                .setSmallIcon(R.drawable.ic_baseline_timer_24)
+//                .setContentTitle("Online")
+//                .setAutoCancel(true)
+//                .setContentText("Click to go Offline")
+//                .setContentIntent(resultPendingIntent)
+//                .setUsesChronometer(true);
+//
+//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+//        stackBuilder.addParentStack(DataActivity.class);
+//        stackBuilder.addNextIntent(intent);
+//        notificationManager.notify(NOTIFICATION_ID, builder.build());
         recycler();
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -107,7 +111,7 @@ public class DataActivity extends AppCompatActivity {
         });
     }
 
-    public void recycler() {
+    private void recycler() {
         recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -129,7 +133,7 @@ public class DataActivity extends AppCompatActivity {
         int hr = Integer.parseInt(str2[0]);
         int month = calendar.get(Calendar.MONTH);
         int min = Integer.parseInt(str2[1]);
-        calendar.set(year, month, day, hr, min -1);
+        calendar.set(year, month, day, hr, min - 1);
         String fromDate = String.valueOf(calendar.getTimeInMillis());
         SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy HH mm");
         Date date2 = new Date();
@@ -149,7 +153,7 @@ public class DataActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG)
                 == PackageManager.PERMISSION_GRANTED) {
             final Cursor cursor = getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
-                    CallLog.Calls.DATE +" BETWEEN ? AND ?", where, CallLog.Calls.DATE+" ASC");
+                    CallLog.Calls.DATE + " BETWEEN ? AND ?", where, CallLog.Calls.DATE + " ASC");
 
             final int number = cursor.getColumnIndex(CallLog.Calls.NUMBER);
             final int dura = cursor.getColumnIndex(CallLog.Calls.DURATION);
@@ -200,30 +204,33 @@ public class DataActivity extends AppCompatActivity {
         Intent intent = new Intent(this, OnlineActivity.class);
         startActivity(intent);
         finish();
+        //snackbar = Snackbar.make(constraintLayout, "You stayed online for: " + chronometer.getText(), Snackbar.LENGTH_INDEFINITE);
+        //snackbar.setDuration(5000);
+        //snackbar.show();
         Toast.makeText(this, "You stayed online for: " + chronometer.getText(), Toast.LENGTH_LONG).show();
-        int NOTIFICATION_ID = 234;
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
-            mChannel.setDescription(Description);
-            mChannel.enableLights(true);
-            mChannel.setLightColor(Color.RED);
-            mChannel.setShowBadge(false);
-            notificationManager.createNotificationChannel(mChannel);
-        }
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_baseline_timer_24)
-                .setAutoCancel(true)
-                .setContentTitle("You were online for : " + chronometer.getText().toString());
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
-        stackBuilder.addParentStack(DataActivity.class);
-        stackBuilder.addNextIntent(intent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(resultPendingIntent);
-        notificationManager.notify(NOTIFICATION_ID, builder.build());
+//        int NOTIFICATION_ID = 234;
+//        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//            int importance = NotificationManager.IMPORTANCE_HIGH;
+//            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+//            mChannel.setDescription(Description);
+//            mChannel.enableLights(true);
+//            mChannel.setLightColor(Color.RED);
+//            mChannel.setShowBadge(false);
+//            notificationManager.createNotificationChannel(mChannel);
+//        }
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+//                .setSmallIcon(R.drawable.ic_baseline_timer_24)
+//                .setAutoCancel(true)
+//                .setContentTitle("You were online for : " + chronometer.getText().toString());
+//
+//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+//        stackBuilder.addParentStack(DataActivity.class);
+//        stackBuilder.addNextIntent(intent);
+//        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+//        builder.setContentIntent(resultPendingIntent);
+//        notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 
     @Override
@@ -238,8 +245,7 @@ public class DataActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        startService(new Intent(this, BackgroundService.class));
+    public void onBackPressed() {
+
     }
 }
