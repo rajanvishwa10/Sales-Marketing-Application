@@ -37,14 +37,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         this.context = context;
         calllogsList = calllogs;
         this.name = name;
+
     }
 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.datalayout, parent, false);
-        ViewHolder viewHolder = new ViewHolder(view);
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     @Override

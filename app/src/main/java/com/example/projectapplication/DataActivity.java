@@ -32,13 +32,23 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class DataActivity extends AppCompatActivity {
@@ -52,7 +62,7 @@ public class DataActivity extends AppCompatActivity {
     private TextView textView;
     SwipeRefreshLayout swipeRefreshLayout;
     //Snackbar snackbar;
-    ConstraintLayout constraintLayout;
+    //ConstraintLayout constraintLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,6 +214,40 @@ public class DataActivity extends AppCompatActivity {
         Intent intent = new Intent(this, OnlineActivity.class);
         startActivity(intent);
         finish();
+        final String startTime = textView.getText().toString();
+        final String[] splitStr = startTime.split(" ");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd:MMMM:yyyy HH:mm");
+        Date date2 = new Date();
+        String dateStr2 = formatter.format(date2);
+        final String[] splitStr2 = dateStr2.split("\\s+");
+        final String name = getIntent().getStringExtra("name");
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbyXWSvct4NraanheJad2nrGp752R3GV8Rqk3QQHgKsTsVfG59rV/exec",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("action", "addTime");
+                params.put("name", name);
+                params.put("date", splitStr[0]);
+                params.put("startTime", splitStr[1]);
+                params.put("endTime", splitStr2[1]);
+                return params;
+            }
+        };
+        int socketTimeOut = 1000;
+        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        stringRequest.setRetryPolicy(retryPolicy);
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(stringRequest);
         //snackbar = Snackbar.make(constraintLayout, "You stayed online for: " + chronometer.getText(), Snackbar.LENGTH_INDEFINITE);
         //snackbar.setDuration(5000);
         //snackbar.show();
@@ -245,7 +289,5 @@ public class DataActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-
-    }
+    public void onBackPressed() {}
 }
