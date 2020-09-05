@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -22,6 +23,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +31,7 @@ import android.os.SystemClock;
 import android.provider.CallLog;
 import android.view.View;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,7 +82,7 @@ public class DataActivity extends AppCompatActivity {
         chronometer.setBase(SystemClock.elapsedRealtime());
         timer = true;
         textView = findViewById(R.id.dayandtime);
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMMM-yyyy HH:mm");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMMM-yyyy HH:mm:ss");
         Date date = new Date();
         String dateStr = formatter.format(date);
         textView.setText(dateStr);
@@ -109,7 +112,7 @@ public class DataActivity extends AppCompatActivity {
 //        stackBuilder.addParentStack(DataActivity.class);
 //        stackBuilder.addNextIntent(intent);
 //        notificationManager.notify(NOTIFICATION_ID, builder.build());
-        recycler();
+        //recycler();
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -143,9 +146,10 @@ public class DataActivity extends AppCompatActivity {
         int hr = Integer.parseInt(str2[0]);
         int month = calendar.get(Calendar.MONTH);
         int min = Integer.parseInt(str2[1]);
-        calendar.set(year, month, day, hr, min - 1);
+        int sec = Integer.parseInt(str2[2]);
+        calendar.set(year, month, day, hr, min, sec);
         String fromDate = String.valueOf(calendar.getTimeInMillis());
-        SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy HH mm");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy HH mm ss");
         Date date2 = new Date();
         String dateStr2 = formatter.format(date2);
         String[] splitStr2 = dateStr2.split("\\s+");
@@ -153,22 +157,22 @@ public class DataActivity extends AppCompatActivity {
         int day2 = Integer.parseInt(splitStr2[0]);
         int hr2 = Integer.parseInt(splitStr2[3]);
         int min2 = Integer.parseInt(splitStr2[4]);
-        //int sec2 = Integer.parseInt(splitStr2[5]);
+        int sec2 = Integer.parseInt(splitStr2[5]);
         int month2 = calendar.get(Calendar.MONTH);
-        calendar.set(year2, month2, day2, hr2, min2);
+        calendar.set(year2, month2, day2, hr2, min2, sec2);
         String toDate = String.valueOf(calendar.getTimeInMillis());
         String[] where = {fromDate, toDate};
         List<Calllogs> list = new ArrayList<>();
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG)
                 == PackageManager.PERMISSION_GRANTED) {
-            final Cursor cursor = getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
+            Cursor cursor = getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
                     CallLog.Calls.DATE + " BETWEEN ? AND ?", where, CallLog.Calls.DATE + " ASC");
 
-            final int number = cursor.getColumnIndex(CallLog.Calls.NUMBER);
-            final int dura = cursor.getColumnIndex(CallLog.Calls.DURATION);
-            cursor.moveToFirst();
+            cursor.move(0);
             while (cursor.moveToNext()) {
+                final int number = cursor.getColumnIndex(CallLog.Calls.NUMBER);
+                final int dura = cursor.getColumnIndex(CallLog.Calls.DURATION);
                 final String duration = cursor.getString(dura);
                 final StringBuilder app = new StringBuilder(duration);
                 app.append(" secs");
@@ -216,7 +220,7 @@ public class DataActivity extends AppCompatActivity {
         finish();
         final String startTime = textView.getText().toString();
         final String[] splitStr = startTime.split(" ");
-        SimpleDateFormat formatter = new SimpleDateFormat("dd:MMMM:yyyy HH:mm");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd:MMMM:yyyy HH:mm:ss");
         Date date2 = new Date();
         String dateStr2 = formatter.format(date2);
         final String[] splitStr2 = dateStr2.split("\\s+");
@@ -290,4 +294,32 @@ public class DataActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {}
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        recycler();
+    }
+
+    public void call(View view) {
+        EditText editText = findViewById(R.id.phonenumber);
+        String number = editText.getText().toString();
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setData(Uri.parse("tel:" + number));
+        if (number.isEmpty()) {
+            editText.setError("Enter Phone number");
+            editText.requestFocus();
+        } else {
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CALL_PHONE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                RequestPermissionsResult();
+            } else {
+                startActivity(intent);
+                editText.setText(null);
+            }
+        }
+    }
+    private void RequestPermissionsResult() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},1);
+    }
 }
