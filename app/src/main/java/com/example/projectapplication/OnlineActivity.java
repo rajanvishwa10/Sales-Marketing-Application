@@ -38,7 +38,6 @@ public class OnlineActivity extends AppCompatActivity {
                 if (switc.isChecked()) {
                     textView2.setText(R.string.online);
                     Intent intent = new Intent(OnlineActivity.this, DataActivity.class);
-                    intent.putExtra("name", name);
                     startActivity(intent);
                     finish();
                 } else {

@@ -22,6 +22,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -31,6 +32,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.CallLog;
+import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.EditText;
@@ -92,6 +94,19 @@ public class DataActivity extends AppCompatActivity {
 
         textView.setText(splitStr[0]);
         textView2.setText(splitStr[1]);
+
+        Intent intent1 = getIntent();
+        String action = intent1.getAction();
+        if(Intent.ACTION_DIAL.equals(action) ){
+            Uri uri = intent1.getData();
+            String uriString = uri.toString();
+            String[] num = uriString.split(":");
+
+            EditText editText = findViewById(R.id.phonenumber);
+            editText.setText(num[1]);
+        }
+
+
 //        Intent intent = new Intent(this, OnlineActivity.class);
 //        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 //        intent.putExtra("notification id", NOTIFICATION_ID);
@@ -136,7 +151,8 @@ public class DataActivity extends AppCompatActivity {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
-        String name = getIntent().getStringExtra("name");
+        SharedPreferences sharedPreferences = getSharedPreferences("name", MODE_PRIVATE);
+        String name = sharedPreferences.getString("name", "");
         adapter = new RecyclerAdapter(getApplicationContext(), getCalllogs(), name);
         recyclerView.setAdapter(adapter);
     }
@@ -230,7 +246,8 @@ public class DataActivity extends AppCompatActivity {
         Date date2 = new Date();
         String dateStr2 = formatter.format(date2);
         final String[] splitStr2 = dateStr2.split("\\s+");
-        final String name = getIntent().getStringExtra("name");
+        SharedPreferences sharedPreferences = getSharedPreferences("name", MODE_PRIVATE);
+        final String name = sharedPreferences.getString("name", "");
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbxRmh3ssfU07SRuXTxlv5lZG-dbHglv-MhyxhkNPr_OYfWnOt8h/exec",
                 new Response.Listener<String>() {
                     @Override
@@ -313,8 +330,7 @@ public class DataActivity extends AppCompatActivity {
         EditText editText1 = findViewById(R.id.edit);
         String number = editText.getText().toString();
         String num = editText1.getText().toString();
-        Intent intent = new Intent(Intent.ACTION_CALL);
-        intent.setData(Uri.parse("tel:" + num + number));
+
         if (number.isEmpty()) {
             editText.setError("Enter Phone number");
             editText.requestFocus();
@@ -326,9 +342,11 @@ public class DataActivity extends AppCompatActivity {
                     != PackageManager.PERMISSION_GRANTED) {
                 RequestPermissionsResult();
             } else {
+                Intent intent = new Intent(Intent.ACTION_CALL);
+                intent.setData(Uri.parse("tel:" + num + number));
                 startActivity(intent);
                 editText.setText(null);
-                editText1.setText(null);
+                //editText1.setText(null);
             }
         }
     }
