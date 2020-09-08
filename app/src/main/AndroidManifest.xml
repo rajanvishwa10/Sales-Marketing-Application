@@ -16,13 +16,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".DataActivity">
-            <meta-data
-                android:name="com.onesignal.NotificationOpened.DEFAULT"
-                android:value="DISABLE" />
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.CALL"/>
+
+                <data android:scheme="tel"/>
+
+            </intent-filter>
         </activity>
         <activity android:name=".SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

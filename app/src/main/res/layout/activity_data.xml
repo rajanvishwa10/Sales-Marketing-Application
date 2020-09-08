@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraint"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/constraint"
     android:background="@android:color/white"
     tools:context=".DataActivity">
 
@@ -12,80 +12,155 @@
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="31dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="244dp"
-        android:layout_marginBottom="16dp"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        android:layout_below="@+id/onlineTime"
+        android:layout_marginStart="175dp"
+        android:layout_marginTop="9dp"
+        android:text="Online Duration:"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/dayandtime"
+        android:id="@+id/textDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/button"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="5dp"
-        android:text="28-8-2020 12:00"
-        app:layout_constraintBottom_toTopOf="@+id/swipe"
-        app:layout_constraintEnd_toStartOf="@+id/button"
-        app:layout_constraintHorizontal_bias="0.456"
-        app:layout_constraintStart_toEndOf="@+id/time"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        android:text="Online Date:"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/onlineDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button"
+        android:layout_marginStart="170dp"
+        android:layout_marginTop="5dp"
+        android:text="Online Date"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/onlineDate"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="5dp"
+        android:text="Online Time:"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/onlineTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/onlineDate"
+        android:layout_marginStart="170dp"
+        android:layout_marginTop="5dp"
+        android:text="Online Time"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textTime"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="5dp"
+        android:text="Online Duration:"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/button"
-        android:layout_width="81dp"
+        android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginEnd="16dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="200dp"
+        android:layout_marginTop="4dp"
         android:background="@drawable/button_back"
         android:onClick="offline"
-        android:text="Offline"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/time"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="Go Offline"
+        android:textColor="@android:color/white" />
 
     <EditText
         android:id="@+id/phonenumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="100dp"
+        android:layout_below="@+id/time"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="60dp"
         android:hint="Phone Number"
-        android:inputType="phone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dayandtime" />
+        android:inputType="phone" />
 
-    <ImageButton
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/round_button"
-        android:src="@drawable/ic_baseline_call_24"
-        android:onClick="call"
-        app:layout_constraintBottom_toBottomOf="@+id/phonenumber"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.48"
-        app:layout_constraintStart_toEndOf="@+id/phonenumber"
-        app:layout_constraintTop_toBottomOf="@+id/button"
-        app:layout_constraintVertical_bias="0.857" />
+    <EditText
+        android:id="@+id/edit"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/time"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="8dp"
+        android:hint="+91"
+        android:inputType="phone" />
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/phonenumber"
+        android:layout_alignParentStart="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="45dp"
+        android:layout_marginTop="2dp">
+
+        <ImageButton
+            android:id="@+id/call"
+            android:layout_width="70dp"
+            android:layout_height="55dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/round_button"
+            android:onClick="call"
+            android:src="@drawable/ic_baseline_call_24" />
+
+        <ImageButton
+            android:id="@+id/copy"
+            android:layout_width="70dp"
+            android:layout_height="55dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="9dp"
+            android:layout_toEndOf="@+id/call"
+            android:background="@drawable/copy_button"
+            android:onClick="paste"
+            android:src="@drawable/paste" />
+
+        <ImageButton
+            android:id="@+id/whatsapp"
+            android:layout_width="70dp"
+            android:layout_height="55dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="9dp"
+            android:layout_toEndOf="@+id/copy"
+            android:background="@drawable/whastapp_button"
+            android:onClick="whatsapp"
+            android:src="@drawable/whatsapp" />
+    </LinearLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/time">
+        android:layout_below="@id/linearLayout"
+        android:layout_marginTop="10dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -94,4 +169,4 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

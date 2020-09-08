@@ -64,7 +64,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         String timeStr = time.getText().toString();
         final String[] times = timeStr.split(" ");
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbyXWSvct4NraanheJad2nrGp752R3GV8Rqk3QQHgKsTsVfG59rV/exec",
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbxRmh3ssfU07SRuXTxlv5lZG-dbHglv-MhyxhkNPr_OYfWnOt8h/exec",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

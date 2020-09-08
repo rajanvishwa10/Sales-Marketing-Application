@@ -18,6 +18,8 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.Service;
 import android.app.TaskStackBuilder;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -62,7 +64,7 @@ public class DataActivity extends AppCompatActivity {
     //    public String CHANNEL_ID = "my_channel_01";
 //    public CharSequence name = "my_channel";
 //    public String Description = "This is my channel";
-    private TextView textView;
+    private TextView textView, textView2;
     SwipeRefreshLayout swipeRefreshLayout;
     //Snackbar snackbar;
     //ConstraintLayout constraintLayout;
@@ -81,11 +83,15 @@ public class DataActivity extends AppCompatActivity {
         chronometer.start();
         chronometer.setBase(SystemClock.elapsedRealtime());
         timer = true;
-        textView = findViewById(R.id.dayandtime);
+        textView = findViewById(R.id.onlineDate);
+        textView2 = findViewById(R.id.onlineTime);
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MMMM-yyyy HH:mm:ss");
         Date date = new Date();
         String dateStr = formatter.format(date);
-        textView.setText(dateStr);
+        String[] splitStr = dateStr.split("\\s+");
+
+        textView.setText(splitStr[0]);
+        textView2.setText(splitStr[1]);
 //        Intent intent = new Intent(this, OnlineActivity.class);
 //        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 //        intent.putExtra("notification id", NOTIFICATION_ID);
@@ -136,7 +142,7 @@ public class DataActivity extends AppCompatActivity {
     }
 
     private List<Calllogs> getCalllogs() {
-        String date = textView.getText().toString();
+        String date = textView.getText().toString() + " " + textView2.getText().toString();
         final String[] splitStr = date.split("\\s+");
         String[] str = splitStr[0].split("-");
         String[] str2 = splitStr[1].split(":");
@@ -219,13 +225,13 @@ public class DataActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
         final String startTime = textView.getText().toString();
-        final String[] splitStr = startTime.split(" ");
+//        final String[] splitStr = startTime.split(" ");
         SimpleDateFormat formatter = new SimpleDateFormat("dd:MMMM:yyyy HH:mm:ss");
         Date date2 = new Date();
         String dateStr2 = formatter.format(date2);
         final String[] splitStr2 = dateStr2.split("\\s+");
         final String name = getIntent().getStringExtra("name");
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbyXWSvct4NraanheJad2nrGp752R3GV8Rqk3QQHgKsTsVfG59rV/exec",
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbxRmh3ssfU07SRuXTxlv5lZG-dbHglv-MhyxhkNPr_OYfWnOt8h/exec",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -241,8 +247,8 @@ public class DataActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
                 params.put("action", "addTime");
                 params.put("name", name);
-                params.put("date", splitStr[0]);
-                params.put("startTime", splitStr[1]);
+                params.put("date", startTime);
+                params.put("startTime", textView2.getText().toString());
                 params.put("endTime", splitStr2[1]);
                 return params;
             }
@@ -293,7 +299,8 @@ public class DataActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {}
+    public void onBackPressed() {
+    }
 
     @Override
     protected void onStart() {
@@ -303,12 +310,17 @@ public class DataActivity extends AppCompatActivity {
 
     public void call(View view) {
         EditText editText = findViewById(R.id.phonenumber);
+        EditText editText1 = findViewById(R.id.edit);
         String number = editText.getText().toString();
+        String num = editText1.getText().toString();
         Intent intent = new Intent(Intent.ACTION_CALL);
-        intent.setData(Uri.parse("tel:" + number));
+        intent.setData(Uri.parse("tel:" + num + number));
         if (number.isEmpty()) {
             editText.setError("Enter Phone number");
             editText.requestFocus();
+        } else if (num.isEmpty() || !num.contains("+")) {
+            editText1.setError("Enter Proper Country Code");
+            editText1.requestFocus();
         } else {
             if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CALL_PHONE)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -316,10 +328,57 @@ public class DataActivity extends AppCompatActivity {
             } else {
                 startActivity(intent);
                 editText.setText(null);
+                editText1.setText(null);
             }
         }
     }
+
     private void RequestPermissionsResult() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},1);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, 1);
+    }
+
+    public void whatsapp(View view) {
+        EditText editText = findViewById(R.id.phonenumber);
+        EditText editText1 = findViewById(R.id.edit);
+        String number = editText.getText().toString();
+
+        boolean installed = installedOrNot("com.whatsapp");
+
+        if (number.isEmpty()) {
+            editText.setError("Enter Phone number");
+            editText.requestFocus();
+        } else {
+            if (installed) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("http://api.whatsapp.com/send?phone=" + editText1.getText().toString() + number));
+                startActivity(intent);
+                editText.setText("");
+            } else {
+                Toast.makeText(this, "WhatsApp Not Installed", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private boolean installedOrNot(String url) {
+        PackageManager packageManager = getPackageManager();
+        boolean installed;
+        try {
+            packageManager.getPackageInfo(url, PackageManager.GET_ACTIVITIES);
+            installed = true;
+        } catch (PackageManager.NameNotFoundException e) {
+            installed = false;
+        }
+        return installed;
+    }
+
+    public void paste(View view) {
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        ClipData clipData = clipboardManager.getPrimaryClip();
+        ClipData.Item item = clipData.getItemAt(0);
+
+        EditText editText = findViewById(R.id.phonenumber);
+        editText.setText(item.getText().toString());
+
+        Toast.makeText(this, "Pasted", Toast.LENGTH_SHORT).show();
     }
 }
