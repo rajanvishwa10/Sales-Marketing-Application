@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraint"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:background="@android:color/white"
     tools:context=".DataActivity">
 
-    <Chronometer
+    <!--Chronometer
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="31dp"
@@ -17,32 +17,31 @@
         android:layout_marginTop="9dp"
         android:text="Online Duration:"
         android:textColor="@color/black"
-        android:textSize="18sp" />
+        android:textSize="18sp" /-->
 
-    <TextView
+    <!--TextView
         android:id="@+id/textDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button"
         android:layout_marginStart="20dp"
         android:layout_marginTop="5dp"
         android:text="Online Date:"
         android:textColor="@color/black"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold" /-->
 
     <TextView
         android:id="@+id/onlineDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button"
         android:layout_marginStart="170dp"
         android:layout_marginTop="5dp"
         android:text="Online Date"
+        android:visibility="invisible"
         android:textColor="@color/black"
         android:textSize="18sp" />
 
-    <TextView
+    <!--TextView
         android:id="@+id/textTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -52,9 +51,9 @@
         android:text="Online Time:"
         android:textColor="@color/black"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold" /-->
 
-    <TextView
+    <!--TextView
         android:id="@+id/onlineTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -63,9 +62,9 @@
         android:layout_marginTop="5dp"
         android:text="Online Time"
         android:textColor="@color/black"
-        android:textSize="18sp" />
+        android:textSize="18sp" /-->
 
-    <TextView
+    <!--TextView
         android:id="@+id/textDuration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -75,9 +74,9 @@
         android:text="Online Duration:"
         android:textColor="@color/black"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold" /-->
 
-    <Button
+    <!--Button
         android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -87,21 +86,52 @@
         android:background="@drawable/button_back"
         android:onClick="offline"
         android:text="Go Offline"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white" /-->
+
+    <ImageView
+        android:id="@+id/imageLogo"
+        android:layout_width="150dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/logo" />
+
+    <TextView
+        android:id="@+id/textlogo3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageLogo"
+        android:layout_centerHorizontal="true"
+        android:text="UNIVERSAL SALES &amp; MARKETING"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/newUsername"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_below="@+id/textlogo3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="37dp"
+        android:layout_marginEnd="60dp"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/black" />
 
     <EditText
         android:id="@+id/phonenumber"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/time"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="7dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/newUsername"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="60dp"
-        android:layout_toEndOf="@+id/edit"
+        android:layout_marginStart="35dp"
         android:hint="Phone Number"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/black"
         android:inputType="phone" />
 
-    <EditText
+    <!--EditText
         android:id="@+id/edit"
         android:layout_width="40dp"
         android:layout_height="wrap_content"
@@ -109,23 +139,33 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="8dp"
         android:inputType="phone"
-        android:text="+91" />
+        android:text="+91" /-->
 
+
+    <!--androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@id/linearLayout"
+        android:layout_marginTop="10dp"-->
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="297dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/phonenumber"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="2dp">
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="20dp">
 
         <ImageButton
             android:id="@+id/call"
             android:layout_width="70dp"
             android:layout_height="55dp"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
             android:background="@drawable/round_button"
             android:onClick="call"
             android:src="@drawable/ic_baseline_call_24" />
@@ -134,8 +174,8 @@
             android:id="@+id/copy"
             android:layout_width="70dp"
             android:layout_height="55dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="9dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
             android:layout_toEndOf="@+id/call"
             android:background="@drawable/copy_button"
             android:onClick="paste"
@@ -145,26 +185,24 @@
             android:id="@+id/whatsapp"
             android:layout_width="70dp"
             android:layout_height="55dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="9dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="50dp"
             android:layout_toEndOf="@+id/copy"
             android:background="@drawable/whastapp_button"
             android:onClick="whatsapp"
             android:src="@drawable/whatsapp" />
     </LinearLayout>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_below="@id/linearLayout"
-        android:layout_marginTop="10dp">
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_below="@+id/linearLayout"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="23dp"
+        android:visibility="invisible" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <!--/androidx.swiperefreshlayout.widget.SwipeRefreshLayout-->
 
 </RelativeLayout>

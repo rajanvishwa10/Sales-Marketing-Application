@@ -38,7 +38,7 @@ public String name;
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
         if (first.equals("yes")) {
-            Intent intent = new Intent(this, OnlineActivity.class);
+            Intent intent = new Intent(this, DataActivity.class);
             intent.putExtra("name", name);
             startActivity(intent);
             finish();
@@ -61,8 +61,8 @@ public String name;
             editor.putString("name", name);
             editor.apply();
 
-            Intent intent = new Intent(this, OnlineActivity.class);
-            intent.putExtra("name", name);
+            Intent intent = new Intent(this, DataActivity.class);
+            //intent.putExtra("name", name);
             startActivity(intent);
             finish();
         }

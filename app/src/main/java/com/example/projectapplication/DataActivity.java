@@ -59,15 +59,15 @@ import java.util.Map;
 
 
 public class DataActivity extends AppCompatActivity {
-    private Chronometer chronometer;
-    private boolean timer;
+    //private Chronometer chronometer;
+    // private boolean timer;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     //    public String CHANNEL_ID = "my_channel_01";
 //    public CharSequence name = "my_channel";
 //    public String Description = "This is my channel";
-    private TextView textView, textView2;
-    SwipeRefreshLayout swipeRefreshLayout;
+    private TextView textView, textView3;
+//    SwipeRefreshLayout swipeRefreshLayout;
     //Snackbar snackbar;
     //ConstraintLayout constraintLayout;
 
@@ -80,24 +80,28 @@ public class DataActivity extends AppCompatActivity {
         }
 
         //constraintLayout = findViewById(R.id.constraint);
-        swipeRefreshLayout = findViewById(R.id.swipe);
-        chronometer = findViewById(R.id.time);
-        chronometer.start();
-        chronometer.setBase(SystemClock.elapsedRealtime());
-        timer = true;
+        //swipeRefreshLayout = findViewById(R.id.swipe);
+//        chronometer = findViewById(R.id.time);
+//        chronometer.start();
+//        chronometer.setBase(SystemClock.elapsedRealtime());
+//        timer = true;
         textView = findViewById(R.id.onlineDate);
-        textView2 = findViewById(R.id.onlineTime);
+
+        textView3 = findViewById(R.id.newUsername);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("name", MODE_PRIVATE);
+        String name = sharedPreferences.getString("name", "");
+
+        textView3.setText("Hii, " + name);
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MMMM-yyyy HH:mm:ss");
         Date date = new Date();
         String dateStr = formatter.format(date);
-        String[] splitStr = dateStr.split("\\s+");
+        textView.setText(dateStr);
 
-        textView.setText(splitStr[0]);
-        textView2.setText(splitStr[1]);
 
         Intent intent1 = getIntent();
         String action = intent1.getAction();
-        if(Intent.ACTION_DIAL.equals(action) ){
+        if (Intent.ACTION_DIAL.equals(action)) {
             Uri uri = intent1.getData();
             String uriString = uri.toString();
             String[] num = uriString.split(":");
@@ -105,7 +109,22 @@ public class DataActivity extends AppCompatActivity {
             EditText editText = findViewById(R.id.phonenumber);
             editText.setText(num[1]);
         }
+        else if(Intent.ACTION_SEND.equals(action)){
+            Uri uri = intent1.getData();
+            String uriString = uri.toString();
+            String[] num = uriString.split(":");
 
+            EditText editText = findViewById(R.id.phonenumber);
+            editText.setText(uriString);
+        }
+        else if(Intent.ACTION_VIEW.equals(action)){
+            Uri uri = intent1.getData();
+            String uriString = uri.toString();
+            String[] num = uriString.split(":");
+
+            EditText editText = findViewById(R.id.phonenumber);
+            editText.setText(num[1]);
+        }
 
 //        Intent intent = new Intent(this, OnlineActivity.class);
 //        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -135,14 +154,14 @@ public class DataActivity extends AppCompatActivity {
 //        notificationManager.notify(NOTIFICATION_ID, builder.build());
         //recycler();
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            @Override
-            public void onRefresh() {
-                recycler();
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        });
+//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @RequiresApi(api = Build.VERSION_CODES.M)
+//            @Override
+//            public void onRefresh() {
+//                recycler();
+//                swipeRefreshLayout.setRefreshing(false);
+//            }
+//        });
     }
 
     private void recycler() {
@@ -158,7 +177,7 @@ public class DataActivity extends AppCompatActivity {
     }
 
     private List<Calllogs> getCalllogs() {
-        String date = textView.getText().toString() + " " + textView2.getText().toString();
+        String date = textView.getText().toString();
         final String[] splitStr = date.split("\\s+");
         String[] str = splitStr[0].split("-");
         String[] str2 = splitStr[1].split(":");
@@ -232,77 +251,77 @@ public class DataActivity extends AppCompatActivity {
         return list;
     }
 
-    public void offline(View view) {
-        if (timer) {
-            chronometer.stop();
-            timer = false;
-        }
-        Intent intent = new Intent(this, OnlineActivity.class);
-        startActivity(intent);
-        finish();
-        final String startTime = textView.getText().toString();
-//        final String[] splitStr = startTime.split(" ");
-        SimpleDateFormat formatter = new SimpleDateFormat("dd:MMMM:yyyy HH:mm:ss");
-        Date date2 = new Date();
-        String dateStr2 = formatter.format(date2);
-        final String[] splitStr2 = dateStr2.split("\\s+");
-        SharedPreferences sharedPreferences = getSharedPreferences("name", MODE_PRIVATE);
-        final String name = sharedPreferences.getString("name", "");
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbxRmh3ssfU07SRuXTxlv5lZG-dbHglv-MhyxhkNPr_OYfWnOt8h/exec",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("action", "addTime");
-                params.put("name", name);
-                params.put("date", startTime);
-                params.put("startTime", textView2.getText().toString());
-                params.put("endTime", splitStr2[1]);
-                return params;
-            }
-        };
-        int socketTimeOut = 1000;
-        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        stringRequest.setRetryPolicy(retryPolicy);
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(stringRequest);
-        //snackbar = Snackbar.make(constraintLayout, "You stayed online for: " + chronometer.getText(), Snackbar.LENGTH_INDEFINITE);
-        //snackbar.setDuration(5000);
-        //snackbar.show();
-        Toast.makeText(this, "You stayed online for: " + chronometer.getText(), Toast.LENGTH_LONG).show();
-//        int NOTIFICATION_ID = 234;
-//        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//            int importance = NotificationManager.IMPORTANCE_HIGH;
-//            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
-//            mChannel.setDescription(Description);
-//            mChannel.enableLights(true);
-//            mChannel.setLightColor(Color.RED);
-//            mChannel.setShowBadge(false);
-//            notificationManager.createNotificationChannel(mChannel);
+//    public void offline(View view) {
+//        if (timer) {
+//            chronometer.stop();
+//            timer = false;
 //        }
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-//                .setSmallIcon(R.drawable.ic_baseline_timer_24)
-//                .setAutoCancel(true)
-//                .setContentTitle("You were online for : " + chronometer.getText().toString());
-//
-//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
-//        stackBuilder.addParentStack(DataActivity.class);
-//        stackBuilder.addNextIntent(intent);
-//        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-//        builder.setContentIntent(resultPendingIntent);
-//        notificationManager.notify(NOTIFICATION_ID, builder.build());
-    }
+//        Intent intent = new Intent(this, OnlineActivity.class);
+//        startActivity(intent);
+//        finish();
+//        final String startTime = textView.getText().toString();
+////        final String[] splitStr = startTime.split(" ");
+//        SimpleDateFormat formatter = new SimpleDateFormat("dd:MMMM:yyyy HH:mm:ss");
+//        Date date2 = new Date();
+//        String dateStr2 = formatter.format(date2);
+//        final String[] splitStr2 = dateStr2.split("\\s+");
+//        SharedPreferences sharedPreferences = getSharedPreferences("name", MODE_PRIVATE);
+//        final String name = sharedPreferences.getString("name", "");
+//        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbxRmh3ssfU07SRuXTxlv5lZG-dbHglv-MhyxhkNPr_OYfWnOt8h/exec",
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                error.printStackTrace();
+//            }
+//        }) {
+//            @Override
+//            protected Map<String, String> getParams() {
+//                Map<String, String> params = new HashMap<>();
+//                params.put("action", "addTime");
+//                params.put("name", name);
+//                params.put("date", startTime);
+//                params.put("startTime", textView2.getText().toString());
+//                params.put("endTime", splitStr2[1]);
+//                return params;
+//            }
+//        };
+//        int socketTimeOut = 1000;
+//        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+//        stringRequest.setRetryPolicy(retryPolicy);
+//        RequestQueue queue = Volley.newRequestQueue(this);
+//        queue.add(stringRequest);
+//        //snackbar = Snackbar.make(constraintLayout, "You stayed online for: " + chronometer.getText(), Snackbar.LENGTH_INDEFINITE);
+//        //snackbar.setDuration(5000);
+//        //snackbar.show();
+//        Toast.makeText(this, "You stayed online for: " + chronometer.getText(), Toast.LENGTH_LONG).show();
+////        int NOTIFICATION_ID = 234;
+////        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+////
+////        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+////            int importance = NotificationManager.IMPORTANCE_HIGH;
+////            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+////            mChannel.setDescription(Description);
+////            mChannel.enableLights(true);
+////            mChannel.setLightColor(Color.RED);
+////            mChannel.setShowBadge(false);
+////            notificationManager.createNotificationChannel(mChannel);
+////        }
+////        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+////                .setSmallIcon(R.drawable.ic_baseline_timer_24)
+////                .setAutoCancel(true)
+////                .setContentTitle("You were online for : " + chronometer.getText().toString());
+////
+////        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+////        stackBuilder.addParentStack(DataActivity.class);
+////        stackBuilder.addNextIntent(intent);
+////        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+////        builder.setContentIntent(resultPendingIntent);
+////        notificationManager.notify(NOTIFICATION_ID, builder.build());
+//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -327,23 +346,26 @@ public class DataActivity extends AppCompatActivity {
 
     public void call(View view) {
         EditText editText = findViewById(R.id.phonenumber);
-        EditText editText1 = findViewById(R.id.edit);
+        //EditText editText1 = findViewById(R.id.edit);
         String number = editText.getText().toString();
-        String num = editText1.getText().toString();
+        //String num = editText1.getText().toString();
 
         if (number.isEmpty()) {
             editText.setError("Enter Phone number");
             editText.requestFocus();
-        } else if (num.isEmpty() || !num.contains("+")) {
-            editText1.setError("Enter Proper Country Code");
-            editText1.requestFocus();
-        } else {
+        }
+
+//        } else if (num.isEmpty() || !num.contains("+")) {
+//            editText1.setError("Enter Proper Country Code");
+//            editText1.requestFocus();
+//        }
+        else {
             if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CALL_PHONE)
                     != PackageManager.PERMISSION_GRANTED) {
                 RequestPermissionsResult();
             } else {
                 Intent intent = new Intent(Intent.ACTION_CALL);
-                intent.setData(Uri.parse("tel:" + num + number));
+                intent.setData(Uri.parse("tel:" + number));
                 startActivity(intent);
                 editText.setText(null);
                 //editText1.setText(null);
@@ -357,7 +379,7 @@ public class DataActivity extends AppCompatActivity {
 
     public void whatsapp(View view) {
         EditText editText = findViewById(R.id.phonenumber);
-        EditText editText1 = findViewById(R.id.edit);
+        //EditText editText1 = findViewById(R.id.edit);
         String number = editText.getText().toString();
 
         boolean installed = installedOrNot("com.whatsapp");
@@ -368,7 +390,7 @@ public class DataActivity extends AppCompatActivity {
         } else {
             if (installed) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("http://api.whatsapp.com/send?phone=" + editText1.getText().toString() + number));
+                intent.setData(Uri.parse("http://api.whatsapp.com/send?phone=" + "+91" + number));
                 startActivity(intent);
                 editText.setText("");
             } else {
@@ -399,4 +421,15 @@ public class DataActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Pasted", Toast.LENGTH_SHORT).show();
     }
+
+//    public void edit(View view) {
+//        EditText editText = findViewById(R.id.newUsername);
+//        String username = editText.getText().toString().trim();
+//        if (username.isEmpty()) {
+//            editText.setError("Enter New Username");
+//            editText.requestFocus();
+//        } else {
+//
+//        }
+//    }
 }
