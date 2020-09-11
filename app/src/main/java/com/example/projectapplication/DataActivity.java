@@ -1,40 +1,24 @@
 package com.example.projectapplication;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
-import android.app.Service;
-import android.app.TaskStackBuilder;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.provider.CallLog;
-import android.util.Log;
 import android.view.View;
-import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,7 +31,6 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,6 +50,8 @@ public class DataActivity extends AppCompatActivity {
 //    public CharSequence name = "my_channel";
 //    public String Description = "This is my channel";
     private TextView textView, textView3;
+    private EditText editText;
+    private String number;
 //    SwipeRefreshLayout swipeRefreshLayout;
     //Snackbar snackbar;
     //ConstraintLayout constraintLayout;
@@ -75,6 +60,8 @@ public class DataActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data);
+        // this.setFinishOnTouchOutside(false);
+
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
@@ -86,11 +73,12 @@ public class DataActivity extends AppCompatActivity {
 //        chronometer.setBase(SystemClock.elapsedRealtime());
 //        timer = true;
         textView = findViewById(R.id.onlineDate);
-
+        editText = findViewById(R.id.phonenumber);
         textView3 = findViewById(R.id.newUsername);
 
         SharedPreferences sharedPreferences = getSharedPreferences("name", MODE_PRIVATE);
         String name = sharedPreferences.getString("name", "");
+        number = editText.getText().toString();
 
         textView3.setText("Hii, " + name);
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MMMM-yyyy HH:mm:ss");
@@ -108,22 +96,23 @@ public class DataActivity extends AppCompatActivity {
 
             EditText editText = findViewById(R.id.phonenumber);
             editText.setText(num[1]);
-        }
-        else if(Intent.ACTION_SEND.equals(action)){
+        } else if (Intent.ACTION_SEND.equals(action)) {
             Uri uri = intent1.getData();
             String uriString = uri.toString();
             String[] num = uriString.split(":");
 
             EditText editText = findViewById(R.id.phonenumber);
             editText.setText(uriString);
-        }
-        else if(Intent.ACTION_VIEW.equals(action)){
+        } else if (Intent.ACTION_VIEW.equals(action)) {
             Uri uri = intent1.getData();
             String uriString = uri.toString();
             String[] num = uriString.split(":");
 
             EditText editText = findViewById(R.id.phonenumber);
             editText.setText(num[1]);
+        }
+        if (savedInstanceState != null) {
+            savedInstanceState.getString("number");
         }
 
 //        Intent intent = new Intent(this, OnlineActivity.class);
@@ -244,6 +233,38 @@ public class DataActivity extends AppCompatActivity {
                 String dateString = format.format(new Date(seconds));
 
                 list.add(new Calllogs(num, app, dir, dateString));
+                final String[] times = dateString.split(" ");
+
+                final String finalDir = dir;
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbxRmh3ssfU07SRuXTxlv5lZG-dbHglv-MhyxhkNPr_OYfWnOt8h/exec",
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }) {
+                    @Override
+                    protected Map<String, String> getParams() {
+                        Map<String, String> params = new HashMap<>();
+                        params.put("action", "addItem");
+                        params.put("name", "rajan");
+                        params.put("date", times[0]);
+                        params.put("time", times[1]);
+                        params.put("phone", num);
+                        params.put("status", finalDir);
+                        params.put("duration", "" + app);
+                        return params;
+                    }
+                };
+                int socketTimeOut = 1000;
+                RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+                stringRequest.setRetryPolicy(retryPolicy);
+                RequestQueue queue = Volley.newRequestQueue(this);
+                queue.add(stringRequest);
             }
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALL_LOG}, 1);
@@ -345,7 +366,7 @@ public class DataActivity extends AppCompatActivity {
     }
 
     public void call(View view) {
-        EditText editText = findViewById(R.id.phonenumber);
+
         //EditText editText1 = findViewById(R.id.edit);
         String number = editText.getText().toString();
         //String num = editText1.getText().toString();
@@ -380,7 +401,7 @@ public class DataActivity extends AppCompatActivity {
     public void whatsapp(View view) {
         EditText editText = findViewById(R.id.phonenumber);
         //EditText editText1 = findViewById(R.id.edit);
-        String number = editText.getText().toString();
+
 
         boolean installed = installedOrNot("com.whatsapp");
 
@@ -413,7 +434,9 @@ public class DataActivity extends AppCompatActivity {
 
     public void paste(View view) {
         ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        assert clipboardManager != null;
         ClipData clipData = clipboardManager.getPrimaryClip();
+        assert clipData != null;
         ClipData.Item item = clipData.getItemAt(0);
 
         EditText editText = findViewById(R.id.phonenumber);
@@ -432,4 +455,5 @@ public class DataActivity extends AppCompatActivity {
 //
 //        }
 //    }
+
 }

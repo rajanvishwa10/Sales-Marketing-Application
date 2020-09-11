@@ -61,38 +61,38 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         time.setText(calllogsList.get(position).getTime());
         type.setText(calllogsList.get(position).getType());
 
-        String timeStr = time.getText().toString();
-        final String[] times = timeStr.split(" ");
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbyXWSvct4NraanheJad2nrGp752R3GV8Rqk3QQHgKsTsVfG59rV/exec",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("action", "addItem");
-                params.put("name", name);
-                params.put("date", times[0]);
-                params.put("time", times[1]);
-                params.put("phone", contact.getText().toString());
-                params.put("status", type.getText().toString());
-                params.put("duration", duration.getText().toString());
-                return params;
-            }
-        };
-        int socketTimeOut = 1000;
-        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        stringRequest.setRetryPolicy(retryPolicy);
-        RequestQueue queue = Volley.newRequestQueue(context);
-        queue.add(stringRequest);
+//        String timeStr = time.getText().toString();
+//        final String[] times = timeStr.split(" ");
+//
+//        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbyXWSvct4NraanheJad2nrGp752R3GV8Rqk3QQHgKsTsVfG59rV/exec",
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                error.printStackTrace();
+//            }
+//        }) {
+//            @Override
+//            protected Map<String, String> getParams() {
+//                Map<String, String> params = new HashMap<>();
+//                params.put("action", "addItem");
+//                params.put("name", name);
+//                params.put("date", times[0]);
+//                params.put("time", times[1]);
+//                params.put("phone", contact.getText().toString());
+//                params.put("status", type.getText().toString());
+//                params.put("duration", duration.getText().toString());
+//                return params;
+//            }
+//        };
+//        int socketTimeOut = 1000;
+//        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+//        stringRequest.setRetryPolicy(retryPolicy);
+//        RequestQueue queue = Volley.newRequestQueue(context);
+//        queue.add(stringRequest);
     }
 
     @Override
