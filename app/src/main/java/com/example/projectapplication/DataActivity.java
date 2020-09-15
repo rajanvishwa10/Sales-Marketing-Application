@@ -1,6 +1,7 @@
 package com.example.projectapplication;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -9,12 +10,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CallLog;
@@ -60,7 +61,7 @@ public class DataActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data);
-        // this.setFinishOnTouchOutside(false);
+        this.setFinishOnTouchOutside(false);
 
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
@@ -80,40 +81,12 @@ public class DataActivity extends AppCompatActivity {
         String name = sharedPreferences.getString("name", "");
         number = editText.getText().toString();
 
-        textView3.setText("Hii, " + name);
+        textView3.setText("Hi, " + name);
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MMMM-yyyy HH:mm:ss");
         Date date = new Date();
         String dateStr = formatter.format(date);
         textView.setText(dateStr);
 
-
-        Intent intent1 = getIntent();
-        String action = intent1.getAction();
-        if (Intent.ACTION_DIAL.equals(action)) {
-            Uri uri = intent1.getData();
-            String uriString = uri.toString();
-            String[] num = uriString.split(":");
-
-            EditText editText = findViewById(R.id.phonenumber);
-            editText.setText(num[1]);
-        } else if (Intent.ACTION_SEND.equals(action)) {
-            Uri uri = intent1.getData();
-            String uriString = uri.toString();
-            String[] num = uriString.split(":");
-
-            EditText editText = findViewById(R.id.phonenumber);
-            editText.setText(uriString);
-        } else if (Intent.ACTION_VIEW.equals(action)) {
-            Uri uri = intent1.getData();
-            String uriString = uri.toString();
-            String[] num = uriString.split(":");
-
-            EditText editText = findViewById(R.id.phonenumber);
-            editText.setText(num[1]);
-        }
-        if (savedInstanceState != null) {
-            savedInstanceState.getString("number");
-        }
 
 //        Intent intent = new Intent(this, OnlineActivity.class);
 //        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -163,6 +136,36 @@ public class DataActivity extends AppCompatActivity {
         String name = sharedPreferences.getString("name", "");
         adapter = new RecyclerAdapter(getApplicationContext(), getCalllogs(), name);
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent1) {
+        super.onNewIntent(intent1);
+        if (intent1 != null) {
+            String action = intent1.getAction();
+            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (Intent.ACTION_DIAL.equals(action)) {
+                Uri uri = intent1.getData();
+                String uriString = uri.toString();
+                String[] num = uriString.split(":");
+                EditText editText = findViewById(R.id.phonenumber);
+                editText.setText(num[1]);
+            }
+//        else if (Intent.ACTION_SEND.equals(action)) {
+//            Uri uri = intent1.getData();
+//            String uriString = uri.toString();
+//            EditText editText = findViewById(R.id.phonenumber);
+//            editText.setText(uriString);
+//        }
+            else if (Intent.ACTION_VIEW.equals(action)) {
+                Uri uri = intent1.getData();
+                String uriString = uri.toString();
+                String[] num = uriString.split(":");
+                EditText editText = findViewById(R.id.phonenumber);
+                editText.setText(num[1]);
+            }
+
+        }
     }
 
     private List<Calllogs> getCalllogs() {
@@ -226,6 +229,8 @@ public class DataActivity extends AppCompatActivity {
                         dir = "BLOCKED";
                         break;
                 }
+                SharedPreferences sharedPreferences = getSharedPreferences("name", MODE_PRIVATE);
+                final String name = sharedPreferences.getString("name", "");
                 String callDate = cursor.getString(cursor.getColumnIndex(CallLog.Calls.DATE));
                 long seconds = Long.parseLong(callDate);
                 final String num = cursor.getString(number);
@@ -251,7 +256,7 @@ public class DataActivity extends AppCompatActivity {
                     protected Map<String, String> getParams() {
                         Map<String, String> params = new HashMap<>();
                         params.put("action", "addItem");
-                        params.put("name", "rajan");
+                        params.put("name", name);
                         params.put("date", times[0]);
                         params.put("time", times[1]);
                         params.put("phone", num);
@@ -400,10 +405,8 @@ public class DataActivity extends AppCompatActivity {
 
     public void whatsapp(View view) {
         EditText editText = findViewById(R.id.phonenumber);
-        //EditText editText1 = findViewById(R.id.edit);
-
-
-        boolean installed = installedOrNot("com.whatsapp");
+        String number = editText.getText().toString();
+        boolean installed = installedOrNot();
 
         if (number.isEmpty()) {
             editText.setError("Enter Phone number");
@@ -413,18 +416,18 @@ public class DataActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("http://api.whatsapp.com/send?phone=" + "+91" + number));
                 startActivity(intent);
-                editText.setText("");
+
             } else {
                 Toast.makeText(this, "WhatsApp Not Installed", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private boolean installedOrNot(String url) {
+    private boolean installedOrNot() {
         PackageManager packageManager = getPackageManager();
         boolean installed;
         try {
-            packageManager.getPackageInfo(url, PackageManager.GET_ACTIVITIES);
+            packageManager.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
             installed = true;
         } catch (PackageManager.NameNotFoundException e) {
             installed = false;
